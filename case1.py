@@ -1,117 +1,95 @@
-#############################################
-# Kural Tabanlı Sınıflandırma ile Potansiyel Müşteri Getirisi Hesaplama
-#############################################
-
-#############################################
-# İş Problemi
-#############################################
-# Gezinomi yaptığı satışların bazı özelliklerini kullanarak seviye tabanlı (level based) yeni satış tanımları
-# oluşturmak ve bu yeni satış tanımlarına göre segmentler oluşturup bu segmentlere göre yeni gelebilecek müşterilerin şirkete
-# ortalama ne kadar kazandırabileceğini tahmin etmek istemektedir.
-# Örneğin: Antalya’dan Herşey Dahil bir otele yoğun bir dönemde gitmek isteyen bir müşterinin ortalama ne kadar kazandırabileceği belirlenmek isteniyor.
-#############################################
-# PROJE GÖREVLERİ
-#############################################
-
-#############################################
-# Soru 1: miuul_gezinomi.xlsx dosyasını okutunuz ve veri seti ile ilgili genel bilgileri gösteriniz.
 import pandas as pd
+
 pd.set_option("display.max_rows", None)
 pd.set_option("display.max_columns", None)
-df = pd.read_excel('miuul_gezinomi.xlsx')
 pd.set_option('display.float_format', lambda x: '%.2f' % x)
+
+#Soru 1:
+# Veri setini yükle
+df = pd.read_excel('miuul_gezinomi.xlsx')
+
+# Veri seti hakkında temel bilgileri göster
 print(df.head())
 print(df.shape)
 print(df.info())
 
- # Soru 2: Kaç unique şehir vardır? Frekansları nedir?
-print(df["SaleCityName"].nunique())
-print(df["SaleCityName"].value_counts())
+# Soru 2: Kaç tane unique şehir var? Frekansları nedir?
+unique_cities = df["SaleCityName"].nunique()
+city_frequencies = df["SaleCityName"].value_counts()
+print(f"Unique şehir sayısı: {unique_cities}")
+print(city_frequencies)
 
- # Soru 3: Kaç unique Concept vardır?
-df["ConceptName"].nunique()
+# Soru 3: Kaç tane unique Concept var?
+unique_concepts = df["ConceptName"].nunique()
+print(f"Unique Concept sayısı: {unique_concepts}")
 
- # Soru 4: Hangi Concept'dan kaçar tane satış gerçekleşmiş?k
-df["ConceptName"].value_counts()
+# Soru 4: Hangi Concept'ten kaçar tane satış gerçekleşmiş?
+concept_sales = df["ConceptName"].value_counts()
+print(concept_sales)
 
- # Soru 5: Şehirlere göre satışlardan toplam ne kadar kazanılmış?
-df.groupby("SaleCityName").agg({"Price": "sum"})
+# Soru 5: Şehirlere göre toplam kazanç nedir?
+city_earnings = df.groupby("SaleCityName").agg({"Price": "sum"})
+print(city_earnings)
 
- # Soru 6: Concept türlerine göre göre ne kadar kazanılmış?
-df.groupby("ConceptName").agg({"Price": "sum"})
+# Soru 6: Concept türlerine göre toplam kazanç nedir?
+concept_earnings = df.groupby("ConceptName").agg({"Price": "sum"})
+print(concept_earnings)
 
 # Soru 7: Şehirlere göre PRICE ortalamaları nedir?
-df.groupby(by=['SaleCityName']).agg({"Price": "mean"})
+city_avg_price = df.groupby(by=['SaleCityName']).agg({"Price": "mean"})
+print(city_avg_price)
 
-# Soru 8: Conceptlere  göre PRICE ortalamaları nedir?
-df.groupby(by=['ConceptName']).agg({"Price": "mean"})
+# Soru 8: Concept'lere göre PRICE ortalamaları nedir?
+concept_avg_price = df.groupby(by=['ConceptName']).agg({"Price": "mean"})
+print(concept_avg_price)
 
 # Soru 9: Şehir-Concept kırılımında PRICE ortalamaları nedir?
-df.groupby(by=["SaleCityName", 'ConceptName']).agg({"Price": "mean"})
+city_concept_avg_price = df.groupby(by=["SaleCityName", 'ConceptName']).agg({"Price": "mean"})
+print(city_concept_avg_price)
 
-
-#############################################
-# GÖREV 2: satis_checkin_day_diff değişkenini EB_Score adında yeni bir kategorik değişkene çeviriniz.
-#############################################
+# Görev 2: satis_checkin_day_diff değişkenini EB_Score adında yeni bir kategorik değişkene çevir
 bins = [-1, 7, 30, 90, df["SaleCheckInDayDiff"].max()]
-labels = ["Last Minuters", "Potential Planners", "Planners", "Early Bookers"]
+labels = ["Son Dakikacılar", "Potansiyel Planlayıcılar", "Planlayıcılar", "Erken Rezervasyon Yapanlar"]
 
 df["EB_Score"] = pd.cut(df["SaleCheckInDayDiff"], bins, labels=labels)
 df.head(50).to_excel("eb_scorew.xlsx", index=False)
-#############################################
-# GÖREV 3: Şehir,Concept, [EB_Score,Sezon,CInday] kırılımında ücret ortalamalarına ve frekanslarına bakınız
-#############################################
+
+# Görev 3: Şehir, Concept, [EB_Score, Sezon, CInDay] kırılımında ücret ortalamalarına ve frekanslarına bak
 # Şehir-Concept-EB Score kırılımında ücret ortalamaları
-df.groupby(by=["SaleCityName", 'ConceptName', "EB_Score" ]).agg({"Price": ["mean", "count"]})
+city_concept_ebscore_avg_price = df.groupby(by=["SaleCityName", 'ConceptName', "EB_Score"]).agg({"Price": ["mean", "count"]})
+print(city_concept_ebscore_avg_price)
 
-#Şehir-Concept-Sezon kırılımında ücret ortalamaları
-df.groupby(by=["SaleCityName", "ConceptName", "Seasons"]).agg({"Price": ["mean", "count"]})
+# Şehir-Concept-Sezon kırılımında ücret ortalamaları
+city_concept_season_avg_price = df.groupby(by=["SaleCityName", "ConceptName", "Seasons"]).agg({"Price": ["mean", "count"]})
+print(city_concept_season_avg_price)
 
-#Şehir-Concept-CInday kırılımında ücret ortalamaları
-df.groupby(by=["SaleCityName", "ConceptName", "CInDay"]).agg({"Price": ["mean", "count"]})
+# Şehir-Concept-CInDay kırılımında ücret ortalamaları
+city_concept_cinday_avg_price = df.groupby(by=["SaleCityName", "ConceptName", "CInDay"]).agg({"Price": ["mean", "count"]})
+print(city_concept_cinday_avg_price)
 
-
-#############################################
-## GÖREV 4: City-Concept-Season kırılımın çıktısını PRICE'a göre sıralayınız.
-#############################################
-# Önceki sorudaki çıktıyı daha iyi görebilmek için sort_values metodunu azalan olacak şekilde PRICE'a uygulayınız.
-# Çıktıyı agg_df olarak kaydediniz.
-
+# Görev 4: Şehir-Concept-Sezon kırılımını PRICE'a göre sırala
 agg_df = df.groupby(["SaleCityName", "ConceptName", "Seasons"]).agg({"Price": "mean"}).sort_values("Price", ascending=False)
-agg_df.head(20)
+print(agg_df.head(20))
 
-#############################################
-# GÖREV 5: Indekste yer alan isimleri değişken ismine çeviriniz.
-#############################################
-# Üçüncü sorunun çıktısında yer alan PRICE dışındaki tüm değişkenler index isimleridir.
-# Bu isimleri değişken isimlerine çeviriniz.
-# İpucu: reset_index()
+# Görev 5: Indekste yer alan isimleri değişken ismine çevir
 agg_df.reset_index(inplace=True)
+print(agg_df.head())
 
-agg_df.head()
-#############################################
-#GÖREV 6: Yeni level based satışları tanımlayınız ve veri setine değişken olarak ekleyiniz.
-#############################################
-# sales_level_based adında bir değişken tanımlayınız ve veri setine bu değişkeni ekleyiniz.
+# Görev 6: Yeni seviye tabanlı satışları tanımla ve veri setine değişken olarak ekle
 agg_df['sales_level_based'] = agg_df[["SaleCityName", "ConceptName", "Seasons"]].agg(lambda x: '_'.join(x).upper(), axis=1)
+print(agg_df.head())
 
-
-#############################################
-# GÖREV 7: Personaları segmentlere ayırınız.
-#############################################
-# PRICE'a göre segmentlere ayırınız,
-# segmentleri "SEGMENT" isimlendirmesi ile agg_df'e ekleyiniz
-# segmentleri betimleyiniz
+# Görev 7: Personaları segmentlere ayır
 agg_df["SEGMENT"] = pd.qcut(agg_df["Price"], 4, labels=["D", "C", "B", "A"])
-agg_df.head(30)
-agg_df.groupby("SEGMENT").agg({"Price": ["mean", "max", "sum"]})
+print(agg_df.head(30))
+print(agg_df.groupby("SEGMENT").agg({"Price": ["mean", "max", "sum"]}))
 
-#############################################
-# GÖREV 8: Oluşan son df'i price değişkenine göre sıralayınız.
-# "ANTALYA_HERŞEY DAHIL_HIGH" hangi segmenttedir ve ne kadar ücret beklenmektedir?
-#############################################
-agg_df.sort_values(by="Price")
+# Görev 8: Son df'i PRICE değişkenine göre sırala
+agg_df = agg_df.sort_values(by="Price", ascending=False)
+print(agg_df.head())
 
+# "ANTALYA_HERŞEY DAHIL_HIGH" hangi segmentte ve ne kadar ücret bekleniyor?
 new_user = "ANTALYA_HERŞEY DAHIL_HIGH"
-agg_df[agg_df["sales_level_based"] == new_user]
+new_user_info = agg_df[agg_df["sales_level_based"] == new_user]
+print(new_user_info)
 
