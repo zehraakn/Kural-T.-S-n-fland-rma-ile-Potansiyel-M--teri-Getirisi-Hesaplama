@@ -1,3 +1,9 @@
+Selamlar,
+
+Aşağıda size Miull da ki yaptığım yeni projeyi paylaştım. Bir kaç aşamanın görselinide ekledim. Keyifli okumalar dilerim.
+
+
+
 İş Problemi
  
  Gezinomi yaptığı satışların bazı özelliklerini kullanarak seviye tabanlı
