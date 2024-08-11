@@ -22,7 +22,7 @@ Veri Seti Hikayesi
 gezinomi_miuul.xlsx verisetiGezinomişirketinin yaptığı satışların fiyatlarını ve bu
  satışlara ait bilgiler içermektedir. Veri seti her satış işleminde oluşan kayıtlardan
  meydana gelmektedir. Bunun anlamı tablo tekilleştirilmemiştir. Diğer bir ifade ile
- müşteribirdenfazlaalışverişyapmışolabilir.
+ müşteri birden fazla alışveriş yapmış olabilir.
 
  Değişkenler
 
